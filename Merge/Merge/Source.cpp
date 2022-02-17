@@ -3,12 +3,12 @@
 #include <random>
 #include <time.h>
 
-bool createFileWithRandomNumbers(const std::string& filename, const int numbersCount, const int maxNumberValue)
+bool createFileWithRandomNumbers(const std::string& fileName, const int numbersCount, const int maxNumberValue)
 {
 	srand(time(0));
 
 	std::ofstream fout;
-	fout.open(filename);
+	fout.open(fileName);
 	if (!fout.is_open())
 	{
 		//throw "Cannot open file";
@@ -27,7 +27,33 @@ bool createFileWithRandomNumbers(const std::string& filename, const int numbersC
 	return true;
 }
 
+bool isFileContainsSortedArray(const std::string& fileName)
+{
+	std::ifstream fin;
+	fin.open(fileName);
+	if (!fin.is_open())
+	{
+		//throw "Cannot open file";
+		return false;
+	}
 
+	int curr, int prev;
+	fin >> prev;
+	while (fin >> curr)
+	{
+		if (curr < prev)
+		{
+			fin.close();
+			return false;
+		}
+
+		prev = curr;
+	}
+
+	fin.close();
+
+	return true;
+}
 
 int main()
 {
