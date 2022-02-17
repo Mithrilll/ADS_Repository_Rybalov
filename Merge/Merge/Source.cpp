@@ -11,12 +11,16 @@ bool createFileWithRandomNumbers(const std::string& filename, const int numbersC
 	fout.open(filename);
 	if (!fout.is_open())
 	{
-		// "Cannot open file";
+		//throw "Cannot open file";
 		return false;
 	}
 
+	std::default_random_engine generator;
+	std::uniform_int_distribution<int> distribution(0, maxNumberValue);
+	generator.seed(time(0));
+
 	for (int i = 0; i < numbersCount; i++)
-		fout << rand() % (maxNumberValue + 1) << " ";
+		fout << distribution(generator) << " ";
 
 	fout.close();
 
@@ -27,7 +31,7 @@ bool createFileWithRandomNumbers(const std::string& filename, const int numbersC
 
 int main()
 {
-	std::cout << "Hello world!" << std::endl;
+	createFileWithRandomNumbers("test.txt", 1000, 50000);
 
 	return 0;
 }
