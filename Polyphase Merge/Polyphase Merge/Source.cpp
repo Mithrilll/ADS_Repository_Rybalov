@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <random>
 #include <time.h>
 
@@ -53,6 +54,38 @@ bool isFileContainsSortedArray(const std::string& fileName)
 	fin.close();
 
 	return true;
+}
+
+void GetFibonacci(std::vector<int>& container, int maxNumber)
+{
+	container.resize(0);
+	container.push_back(1);
+	container.push_back(1);
+	int i = 1;
+
+	while (container.back() < maxNumber)
+	{
+		container.push_back(container[i] + container[i - 1]);
+		i++;
+	}
+
+	return;
+}
+
+void PolyPhaseSort(const std::string& fileName)
+{
+	std::ifstream fin;
+	fin.open(fileName);
+	if (!fin.is_open())
+	{
+		//throw "Cannot open file";
+		return;
+	}
+
+	int cnt = 0;
+
+	std::vector<int> finbonacci;
+	GetFibonacci(finbonacci, cnt);
 }
 
 int main()
