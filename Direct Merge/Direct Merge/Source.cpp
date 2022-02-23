@@ -188,7 +188,7 @@ void Direct_Merge(const std::string filenameIn1, const std::string filenameIn2, 
 }
 
 // Split into sequences of numbers of size "size", from file "filenameIn" to files "filenameOut1" and "filenameOut2"
-void split(const char* filenameIn, const char* filenameOut1, const char* filenameOut2)
+void split(const std::string& filenameIn, const std::string& filenameOut1, const std::string& filenameOut2)
 {
     std::ifstream fin;
     std::ofstream fout1;
@@ -243,7 +243,7 @@ void split(const char* filenameIn, const char* filenameOut1, const char* filenam
 }
 
 // Checking if a sequence of numbers is sorted
-bool check(const char* filenameIn1, const char* filenameIn2, const char* filenameIn3, const char* filenameIn4)
+bool check(const std::string& filenameIn1, const std::string& filenameIn2, const std::string& filenameIn3, const std::string& filenameIn4)
 {
     std::ifstream fin;
     int cnt = 0;
@@ -277,7 +277,7 @@ bool check(const char* filenameIn1, const char* filenameIn2, const char* filenam
 }
 
 // Print sequence of numbers from file "filename"
-void print(const char* filename)
+void print(const std::string& filename)
 {
     std::ifstream fin;
     std::ofstream fout;
@@ -294,7 +294,7 @@ void print(const char* filename)
 }
 
 //returns filename stores sorted sequnce
-const char* sorted(const char* filename1, const char* filename2, const char* filename3, const char* filename4)
+std::string sorted(const std::string& filename1, const std::string& filename2, const std::string& filename3, const std::string& filename4)
 {
     std::ifstream fin;
 
@@ -333,38 +333,70 @@ const char* sorted(const char* filename1, const char* filename2, const char* fil
     return "A.txt";
 }
 
-int main()
+void sortFile(const std::string& fileName)
 {
-    int n;
+    split(fileName, "C.txt", "D.txt");
 
-    std::cout << "Enter count of numbers in sequence: ";
-    std::cin >> n;
+    int i = 1;
+    while (!check(fileName, "B.txt", "C.txt", "D.txt"))
+    {
+        Direct_Merge("C.txt", "D.txt", fileName, "B.txt", i);
+        i *= 2;
+        Direct_Merge(fileName, "B.txt", "C.txt", "D.txt", i);
+        i *= 2;
+    }
+}
 
-    createFileWithRandomNumbers("A.txt", n, 10000);
-    std::cout << "Primal sequence: ";
-    print("A.txt");
+int createAndSortFile(const std::string& fileName, const int  numbersCount, const int maxNumberValue)
+{
+    if (!createFileWithRandomNumbers("A.txt", numbersCount, maxNumberValue))
+        return -1;
+
+    /*std::cout << "Primal sequence: ";
+    print(fileName);*/
 
     clock_t start, finish;
 
     start = clock();
 
-    split("A.txt", "C.txt", "D.txt");
-
-    int i = 1;
-    while (!check("A.txt", "B.txt", "C.txt", "D.txt"))
-    {
-        Direct_Merge("C.txt", "D.txt", "A.txt", "B.txt", i);
-        i *= 2;
-        Direct_Merge("A.txt", "B.txt", "C.txt", "D.txt", i);
-        i *= 2;
-    }
+    sortFile(fileName);
 
     finish = clock();
+    
+    /*std::cout << "\nSorted sequence: ";
+    print(sorted("A.txt", "B.txt", "C.txt", "D.txt"));*/
 
-    std::cout << "\nSorted sequence: ";
-    print(sorted("A.txt", "B.txt", "C.txt", "D.txt"));
+    std::cout << "\nAlgorithm running time : " << (float)(finish - start) / CLOCKS_PER_SEC << " sek.\n";
 
-    std::cout << "\nAlgorithm running time : " << (float)(finish - start) / CLOCKS_PER_SEC << " sek.";
+    if (!isFileContainsSortedArray(fileName))
+        return -2;
+
+    return 1;
+}
+
+int main()
+{
+    std::string fileName = "A.txt";
+    const int numbersCount = 1000000;
+    const int maxNumberValue = 100000;
+
+    for (int i = 0; i < 10; i++)
+    {
+        switch (createAndSortFile(fileName, numbersCount, maxNumberValue))
+        {
+        case 1:
+            std::cout << "Test passed." << std::endl;
+            break;
+
+        case -1:
+            std::cout << "Test failed: can't create file." << std::endl;
+            break;
+
+        case -2:
+            std::cout << "Test failed: file isn't sorted." << std::endl;
+            break;
+        }
+    }
 
     return 0;
 }
