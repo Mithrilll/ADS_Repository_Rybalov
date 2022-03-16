@@ -2,6 +2,39 @@
 #include <iostream>
 #include "tree.h"
 
+binary_tree::node* binary_tree::copy(node* subTreeRoot)
+{
+	node* root = nullptr;
+	if (subTreeRoot)
+	{
+		root = new node(subTreeRoot->data);
+		root->left = copy(subTreeRoot->left);
+		root->right = copy(subTreeRoot->right);
+	}
+	
+	return root;
+}
+
+void binary_tree::deleteSubTree(node* subTreeRoot)
+{
+	if (subTreeRoot)
+	{
+		deleteSubTree(subTreeRoot->left);
+		deleteSubTree(subTreeRoot->right);
+		delete subTreeRoot;
+	}
+}
+
+binary_tree::binary_tree(const binary_tree& bt)
+{
+	m_root = copy(bt.m_root);
+}
+
+binary_tree::~binary_tree()
+{
+	deleteSubTree(m_root);
+}
+
 binary_tree::node* binary_tree::getRoot()
 {
     return m_root;
@@ -150,8 +183,46 @@ binary_tree::node* binary_tree::findParent_by_index(int index)
 
 binary_tree::node* binary_tree::findParent_by_index(node* subTreeRoot, int index)
 {
-	//TO DO
-	return nullptr;
+	if (index == 0) {
+		return subTreeRoot;
+	}
+	else if (subTreeRoot == nullptr) {
+		return nullptr;
+	}
+
+	std::vector<node*> prevLevelNodes;
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(subTreeRoot);
+
+
+	while (currentLevelNodes.size() != 0 && index >= currentLevelNodes.size()) {
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes) {
+			if (node->left) {
+				nextLevelNodes.push_back(node->left);
+			}
+
+			if (node->right) {
+				nextLevelNodes.push_back(node->right);
+			}
+		}
+
+		index -= currentLevelNodes.size();
+		prevLevelNodes = currentLevelNodes;
+		currentLevelNodes.swap(nextLevelNodes);
+	}
+
+	if (currentLevelNodes.size() == 0) {
+		return nullptr;
+	}
+	else {
+		for (node* i : prevLevelNodes)
+			if (i->left == currentLevelNodes[index] || i->right == currentLevelNodes[index])
+				return i;
+		return nullptr;
+	}
 }
 
 void binary_tree::find_and_erase_by_key(int key)
@@ -178,7 +249,7 @@ void binary_tree::find_and_erase_by_index(node* subTreeRoot, int index)
 
 void binary_tree::erase(node* toDelete)
 {
-
+	
 }
 
 void binary_tree::printHorizontal()

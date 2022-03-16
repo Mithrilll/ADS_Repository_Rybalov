@@ -13,11 +13,17 @@ int main()
 
 	std::cout << "\n\n\n";
 
-	bt.printHorizontal(bt.find_by_key(4));
+	bt.printHorizontal(bt.find_by_index(0));
 
 	std::cout << "\n\n\n";
 
-	bt.printHorizontal(bt.findParent_by_key(4));
+	bt.printHorizontal(bt.findParent_by_index(3));
+
+	binary_tree bt2 = bt;
+
+	std::cout << "\n\n\n";
+
+	bt2.printHorizontal();
 
 	return 0;
 }

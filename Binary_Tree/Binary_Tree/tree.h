@@ -4,8 +4,15 @@ class binary_tree
 {
 	struct node;
 
+private:
+	node* copy(node* subTreeRoot);
+	void deleteSubTree(node* subTreeRoot);
+
 public:
 	binary_tree() = default;
+	binary_tree(const binary_tree& bt);
+	
+	~binary_tree();
 
 	node* getRoot();
 
