@@ -7,12 +7,30 @@ binary_tree::node* binary_tree::copy(node* subTreeRoot)
 	node* root = nullptr;
 	if (subTreeRoot)
 	{
-		root = new node(subTreeRoot->data);
+		root = new node(subTreeRoot->value());
 		root->left = copy(subTreeRoot->left);
 		root->right = copy(subTreeRoot->right);
 	}
 	
 	return root;
+}
+
+binary_tree::node* binary_tree::getFree(node* subTreeRoot)
+{
+	if (subTreeRoot == nullptr)
+		throw "leaf: tree is empty";
+
+	if (subTreeRoot->left == nullptr || subTreeRoot->right == nullptr)
+		return subTreeRoot;
+	else
+	{
+		int h1 = height(subTreeRoot->left);
+		int h2 = height(subTreeRoot->right);
+		if (h1 < h2)
+			return getFree(subTreeRoot->left);
+		else
+			return getFree(subTreeRoot->left);
+	}
 }
 
 void binary_tree::deleteSubTree(node* subTreeRoot)
@@ -25,6 +43,131 @@ void binary_tree::deleteSubTree(node* subTreeRoot)
 	}
 }
 
+bool binary_tree::isEmpty()
+{
+	return m_root == nullptr;
+}
+
+binary_tree binary_tree::copySubTree(node* subTreeRoot)
+{
+	binary_tree nt;
+	nt.m_root = copy(subTreeRoot);
+
+	return nt;
+}
+
+int binary_tree::height()
+{
+	return height(m_root);
+}
+
+int binary_tree::height(node* subTreeRoot)
+{
+	int hei = 0;
+	if (subTreeRoot == nullptr)
+		return hei;
+
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(subTreeRoot);
+
+	while (currentLevelNodes.size() != 0) 
+	{
+		hei++;
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes) 
+		{
+			if (node->left) 
+			{
+				nextLevelNodes.push_back(node->left);
+			}
+
+			if (node->right) {
+				nextLevelNodes.push_back(node->right);
+			}
+		}
+
+		currentLevelNodes.swap(nextLevelNodes);
+	}
+
+	return hei;
+}
+
+int binary_tree::countNodes()
+{
+	return countNodes(m_root);
+}
+
+int binary_tree::countNodes(node* subTreeRoot)
+{
+	int cnt = 0;
+	if (subTreeRoot)
+	{
+		cnt++;
+		cnt += countNodes(subTreeRoot->left);
+		cnt += countNodes(subTreeRoot->right);
+	}
+
+	return cnt;
+}
+
+int binary_tree::max()
+{
+	return max(m_root);
+}
+
+int binary_tree::max(node* subTreeRoot)
+{
+	if (subTreeRoot == nullptr)
+		throw "max: subtree is empty";
+
+	int m = subTreeRoot->value();
+	if (subTreeRoot->left)
+	{
+		int m1 = max(subTreeRoot->left);
+		if (m < m1)
+			m = m1;
+	}
+
+	if (subTreeRoot->right)
+	{
+		int m1 = max(subTreeRoot->right);
+		if (m < m1)
+			m = m1;
+	}
+		
+	return m;
+}
+
+int binary_tree::min()
+{
+	return min(m_root);
+}
+
+int binary_tree::min(node* subTreeRoot)
+{
+	if (subTreeRoot == nullptr)
+		throw "min: subtree is empty";
+
+	int m = subTreeRoot->value();
+	if (subTreeRoot->left)
+	{
+		int m1 = max(subTreeRoot->left);
+		if (m > m1)
+			m = m1;
+	}
+
+	if (subTreeRoot->right)
+	{
+		int m1 = max(subTreeRoot->right);
+		if (m > m1)
+			m = m1;
+	}
+
+	return m;
+}
+
 binary_tree::binary_tree(const binary_tree& bt)
 {
 	m_root = copy(bt.m_root);
@@ -35,10 +178,10 @@ binary_tree::~binary_tree()
 	deleteSubTree(m_root);
 }
 
-binary_tree::node* binary_tree::getRoot()
-{
-    return m_root;
-}
+//binary_tree::node* binary_tree::getRoot()
+//{
+//    return m_root;
+//}
 
 binary_tree::node* binary_tree::add(const int key)
 {
@@ -84,16 +227,16 @@ binary_tree::node* binary_tree::find_by_key(node* subTreeRoot, int key)
 {
 	if (subTreeRoot)
 	{
-		if (subTreeRoot->data == key)
+		if (subTreeRoot->value() == key)
 			return subTreeRoot;
 		else
 		{
 			node* left = find_by_key(subTreeRoot->left, key);
 			node* right = find_by_key(subTreeRoot->right, key);
-			if (left && left->data == key)
+			if (left && left->value() == key)
 				return left;
 
-			if (right && right->data == key)
+			if (right && right->value() == key)
 				return right;
 
 			return nullptr;
@@ -153,11 +296,14 @@ binary_tree::node* binary_tree::findParent_by_key(int key)
 
 binary_tree::node* binary_tree::findParent_by_key(node* subTreeRoot, int key)
 {
+	if (m_root->value() == key)
+		return nullptr;
+
 	if (subTreeRoot)
 	{
 		if (subTreeRoot->left && subTreeRoot->right)
 		{
-			if (subTreeRoot->left->data == key || subTreeRoot->right->data == key)
+			if (subTreeRoot->left->value() == key || subTreeRoot->right->value() == key)
 				return subTreeRoot;
 			else
 			{
@@ -184,7 +330,7 @@ binary_tree::node* binary_tree::findParent_by_index(int index)
 binary_tree::node* binary_tree::findParent_by_index(node* subTreeRoot, int index)
 {
 	if (index == 0) {
-		return subTreeRoot;
+		return nullptr;
 	}
 	else if (subTreeRoot == nullptr) {
 		return nullptr;
@@ -225,31 +371,123 @@ binary_tree::node* binary_tree::findParent_by_index(node* subTreeRoot, int index
 	}
 }
 
-void binary_tree::find_and_erase_by_key(int key)
+bool binary_tree::find_and_erase_by_key(int key)
 {
-	find_and_erase_by_key(m_root, key);
+	return find_and_erase_by_key(m_root, key);
 }
 
-void binary_tree::find_and_erase_by_key(node* subTreeRoot, int key)
+bool binary_tree::find_and_erase_by_key(node* subTreeRoot, int key)
 {
 	node* to_delete = find_by_key(subTreeRoot, key);
-	erase(to_delete);
+	return erase(to_delete);
 }
 
-void binary_tree::find_and_erase_by_index(int index)
+bool binary_tree::find_and_erase_by_index(int index)
 {
-	find_and_erase_by_index(m_root, index);
+	return find_and_erase_by_index(m_root, index);
 }
 
-void binary_tree::find_and_erase_by_index(node* subTreeRoot, int index)
+bool binary_tree::find_and_erase_by_index(node* subTreeRoot, int index)
 {
 	node* to_delete = find_by_index(subTreeRoot, index);
-	erase(to_delete);
+	return erase(to_delete);
 }
 
-void binary_tree::erase(node* toDelete)
+bool binary_tree::erase(node* toDelete)
 {
-	
+	if (toDelete->left == nullptr && toDelete->right == nullptr)
+	{
+		node* parent = findParent_by_key(toDelete->value());
+
+		if (parent && parent->left == toDelete)
+			parent->left = nullptr;
+
+		if (parent && parent->right == toDelete)
+			parent->right = nullptr;
+
+		if (!parent)
+			m_root = nullptr;
+
+		delete toDelete;
+
+		return true;
+	}
+
+	if (toDelete->left == nullptr && toDelete->right != nullptr)
+	{
+		node* parent = findParent_by_key(toDelete->value());
+
+		if (parent && parent->left == toDelete)
+			parent->left = toDelete->right;
+
+		if (parent && parent->right == toDelete)
+			parent->right = toDelete->right;
+
+		if (!parent)
+			m_root = toDelete->left;
+
+		delete toDelete;
+
+		return true;
+	}
+
+	if (toDelete->left != nullptr && toDelete->right == nullptr)
+	{
+		node* parent = findParent_by_key(toDelete->value());
+
+		if (parent && parent->left == toDelete)
+			parent->left = toDelete->left;
+
+		if (parent && parent->right == toDelete)
+			parent->right = toDelete->left;
+
+		if (!parent)
+			m_root = toDelete->left;
+
+		delete toDelete;
+
+		return true;
+	}
+
+	if (toDelete->left && toDelete->right)
+	{
+		node* parent = findParent_by_key(toDelete->value());
+		if (parent)
+		{
+			if (parent->left == toDelete)
+			{
+				parent->left = toDelete->left;
+				node* toAdd = getFree(parent);
+				if (toAdd->left == nullptr)
+					toAdd->left = toDelete->right;
+				else
+					toAdd->right = toDelete->right;
+			}
+
+			if (parent->right == toDelete)
+			{
+				parent->right = toDelete->right;
+				node* toAdd = getFree(parent);
+				if (toAdd->left == nullptr)
+					toAdd->left = toDelete->left;
+				else
+					toAdd->right = toDelete->left;
+			}
+		}
+		else
+		{
+			m_root = toDelete->left;
+			node* toAdd = getFree(m_root);
+			if (toAdd->left == nullptr)
+				toAdd->left = toDelete->right;
+			else
+				toAdd->right = toDelete->right;
+		}
+
+		delete toDelete;
+
+		return true;
+	}
 }
 
 void binary_tree::printHorizontal()
@@ -273,33 +511,123 @@ void binary_tree::printHorizontal(node* subTreeRoot, const int level)
 
 	for (int i = 0; i < level; i++)
 		cout << "   ";
-	cout << subTreeRoot->data << endl;
+	cout << subTreeRoot->value() << endl;
 
 	printHorizontal(subTreeRoot->left, level + 1);
 }
 
 void binary_tree::printLevel(const int level)
 {
-	printLevel(m_root, level, 0);
+	printLevel(m_root, level, 0, true);
 }
 
-void binary_tree::printLevel(node* subTreeRoot, const int level, const int currentLevel)
+void binary_tree::printLevel(node* subTreeRoot, const int level, const int currentLevel, bool left)
 {
 	using std::cout;
 	using std::endl;
+	int h = height(m_root);
 
 	if (subTreeRoot == nullptr) {
 		if (subTreeRoot == m_root) {
 			cout << "Tree is empty" << endl;
 		}
+		for (int i = 0; i < pow(2, (h - level-1)); i++)
+			cout << " ";
+		if(!left)
+			for(int i =0; i < pow(2, (h - level - 1))-1; i++)
+				cout << " ";
+		cout << "X";
 		return;
 	}
 
 	if (currentLevel == level) {
-		cout << subTreeRoot->data << "   ";
+		for (int i = 0; i < pow(2, (h - level-1)); i++)
+			cout << " ";
+		if (!left)
+			for (int i = 0; i < pow(2, (h - level - 1)) - 1; i++)
+				cout << " ";
+		cout << subTreeRoot->value();
 	}
 	else if (currentLevel < level) {
-		printLevel(subTreeRoot->left, level, currentLevel + 1);
-		printLevel(subTreeRoot->right, level, currentLevel + 1);
+		if (left)
+		{
+			printLevel(subTreeRoot->left, level, currentLevel + 1, true);
+			printLevel(subTreeRoot->right, level, currentLevel + 1, false);
+		}
+		else
+		{
+			printLevel(subTreeRoot->left, level, currentLevel + 1, false);
+			printLevel(subTreeRoot->right, level, currentLevel + 1, false);
+		}
 	}
+}
+
+void binary_tree::printVertical()
+{
+	printVertical(m_root);
+}
+
+void binary_tree::printVertical(node* subTreeRoot)
+{
+	if (subTreeRoot == nullptr)
+		throw "printVertical: tree is empty";
+
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(subTreeRoot);
+	int significant = 1;
+	int level = 1;
+	int h = height(subTreeRoot);
+
+	while (significant != 0) 
+	{
+		for (int i = 0; i < currentLevelNodes.size(); i++)
+		{
+			if (i == 0)
+				for (int j = 0; j < pow(2, h - level); j++)
+					std::cout << " ";
+			else
+				for (int j = 0; j < pow(2, h - level) + pow(2, h - level) - 1; j++)
+					std::cout << " ";
+
+			if (currentLevelNodes[i])
+				std::cout << currentLevelNodes[i]->value();
+			else
+				std::cout << "X";
+		}
+		std::cout << std::endl;
+
+		significant = 0;
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes) {
+			if (node)
+			{
+				if (node->left)
+					significant++;
+				if (node->right)
+					significant++;
+
+				nextLevelNodes.push_back(node->left);
+				nextLevelNodes.push_back(node->right);
+			}
+			else
+			{
+				nextLevelNodes.push_back(nullptr);
+				nextLevelNodes.push_back(nullptr);
+			}
+		}
+
+		currentLevelNodes.swap(nextLevelNodes);
+		level++;
+	}
+}
+
+binary_tree binary_tree::operator=(const binary_tree& other)
+{
+	deleteSubTree(m_root);
+
+	m_root = copy(other.m_root);
+
+	return *this;
 }
