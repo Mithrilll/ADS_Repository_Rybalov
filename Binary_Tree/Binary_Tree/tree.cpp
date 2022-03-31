@@ -33,6 +33,11 @@ binary_tree::node* binary_tree::getFree(node* subTreeRoot)
 	}
 }
 
+void binary_tree::deleteSubTree()
+{
+	deleteSubTree(m_root);
+}
+
 void binary_tree::deleteSubTree(node* subTreeRoot)
 {
 	if (subTreeRoot)
@@ -40,6 +45,8 @@ void binary_tree::deleteSubTree(node* subTreeRoot)
 		deleteSubTree(subTreeRoot->left);
 		deleteSubTree(subTreeRoot->right);
 		delete subTreeRoot;
+		if (subTreeRoot == m_root)
+			m_root = nullptr;
 	}
 }
 
@@ -562,6 +569,142 @@ void binary_tree::printLevel(node* subTreeRoot, const int level, const int curre
 	}
 }
 
+bool binary_tree::isBalanced()
+{
+	return isBalanced(m_root);
+}
+
+bool binary_tree::isBalanced(node* subTreeRoot)
+{
+	if (subTreeRoot == nullptr)
+		return true;
+
+	if (abs(height(subTreeRoot->left) - height(subTreeRoot->right)) <= 1 && isBalanced(subTreeRoot->left) && isBalanced(subTreeRoot->right))
+		return true;
+	else
+		return false;
+}
+
+int binary_tree::sum()
+{
+	return sum(m_root);
+}
+
+int binary_tree::sum(node* subTreeRoot)
+{
+	if (subTreeRoot == nullptr) {
+		return -1;
+	}
+
+	int summa = 0;
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(subTreeRoot);
+	summa += subTreeRoot->value();
+
+	while (currentLevelNodes.size() != 0) 
+	{
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes) {
+			if (node->left) {
+				nextLevelNodes.push_back(node->left);
+				summa += node->left->value();
+			}
+
+			if (node->right) {
+				nextLevelNodes.push_back(node->right);
+				summa += node->right->value();
+			}
+		}
+
+		currentLevelNodes.swap(nextLevelNodes);
+	}
+
+	return summa;
+}
+
+int binary_tree::level(int key)
+{
+	return level(m_root, key);
+}
+
+int binary_tree::level(node* subTreeRoot, int key)
+{
+	if (subTreeRoot == nullptr) {
+		return -1;
+	}
+
+	if (subTreeRoot->value() == key)
+		return 0;
+
+	int h = height(subTreeRoot);
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(subTreeRoot);
+
+	for (int i = 0; i < h; i++)
+	{
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes) {
+			if (node->left) {
+				nextLevelNodes.push_back(node->left);
+				if (node->left->value() == key)
+					return i + 1;
+			}
+
+			if (node->right) {
+				nextLevelNodes.push_back(node->right);
+				if (node->right->value() == key)
+					return i + 1;
+			}
+		}
+
+		currentLevelNodes.swap(nextLevelNodes);
+	}
+	
+	return -1;
+}
+
+std::vector<int> binary_tree::round()
+{
+	return round(m_root);
+}
+
+std::vector<int> binary_tree::round(node* subTreeRoot)
+{
+	if (subTreeRoot == nullptr)
+		return std::vector<int>();
+
+	std::vector<int> keys;
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(subTreeRoot);
+	keys.push_back(subTreeRoot->value());
+
+	while (currentLevelNodes.size() != 0) 
+	{
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes) {
+			if (node->left) {
+				nextLevelNodes.push_back(node->left);
+				keys.push_back(node->left->value());
+			}
+
+			if (node->right) {
+				nextLevelNodes.push_back(node->right);
+				keys.push_back(node->right->value());
+			}
+		}
+
+		currentLevelNodes.swap(nextLevelNodes);
+	}
+
+	return keys;
+}
+
 void binary_tree::printVertical()
 {
 	printVertical(m_root);
@@ -570,7 +713,10 @@ void binary_tree::printVertical()
 void binary_tree::printVertical(node* subTreeRoot)
 {
 	if (subTreeRoot == nullptr)
-		throw "printVertical: tree is empty";
+	{
+		std::cout << "Tree is empty" << std::endl;
+		return;
+	}
 
 	std::vector<node*> currentLevelNodes;
 	currentLevelNodes.push_back(subTreeRoot);
@@ -620,6 +766,24 @@ void binary_tree::printVertical(node* subTreeRoot)
 
 		currentLevelNodes.swap(nextLevelNodes);
 		level++;
+	}
+}
+
+void binary_tree::printLeafs()
+{
+	printLeafs(m_root);
+}
+
+void binary_tree::printLeafs(node* subTreeRoot)
+{
+	if (subTreeRoot == nullptr)
+		return;
+	if (subTreeRoot->left == nullptr && subTreeRoot->right == nullptr)
+		std::cout << subTreeRoot->value() << " ";
+	else
+	{
+		printLeafs(subTreeRoot->left);
+		printLeafs(subTreeRoot->right);
 	}
 }
 

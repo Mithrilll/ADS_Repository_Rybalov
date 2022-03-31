@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 class binary_tree 
 {
@@ -16,6 +17,7 @@ public:
 	~binary_tree();
 
 	// удаление поддерева
+	void deleteSubTree();
 	void deleteSubTree(node* subTreeRoot);
 
 	// получение корня
@@ -64,10 +66,25 @@ public:
 	void printLevel(const int level);
 	void printLevel(node* subTreeRoot, const int level, const int currentLevel = 0, bool left = true);
 
+	bool isBalanced();
+	bool isBalanced(node* subTreeRoot);
+
+	int sum();
+	int sum(node* subTreeRoot);
+
+	int level(int key);
+	int level(node* subTreeRoot, int key);
+
+	std::vector<int> round();
+	std::vector<int> round(node* subTreeRoot);
+
 	// так-то лучше))
 	// можно так же реализовать и это с уровнями, работать будет нормально поидее
 	void printVertical();
 	void printVertical(node* subTreeRoot);
+
+	void printLeafs();
+	void printLeafs(node* subTreeRoot);
 
 	binary_tree operator=(const binary_tree& other);
 
