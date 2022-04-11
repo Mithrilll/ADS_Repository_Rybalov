@@ -11,6 +11,21 @@ private:
 
 	node* getFree(node* subTreeRoot);
 
+protected:
+	node* add(node* subTreeRoot, const int key);
+
+	node* find_by_key(node* subTreeRoot, int key);
+	node* find_by_index(node* subTreeRoot, int index);
+
+	node* findParent_by_key(node* subTreeRoot, int key);
+	node* findParent_by_index(node* subTreeRoot, int index);
+
+	node* find_by_key(const int key);
+	node* find_by_index(const int index);
+
+	node* findParent_by_key(const int key);
+	node* findParent_by_index(const int index);
+
 public:
 	binary_tree() = default;
 	binary_tree(const binary_tree& bt);
@@ -21,7 +36,7 @@ public:
 	void deleteSubTree(node* subTreeRoot);
 
 	// получение корня
-	//node* getRoot();
+	node* getRoot();
 
 	bool isEmpty();
 
@@ -39,18 +54,16 @@ public:
 	int min();
 	int min(node* subTreeRoot);
 
-	node* add(const int key);
-	node* add(node* subTreeRoot, const int key);
+	bool add(const int key);
+	int index_by_key(int key);
+	int index_by_key(node* subTreeRoot, int key);
+	int key_by_index(int index);
+	int key_by_index(node* subTreeRoot, int index);
 
-	node* find_by_key(const int key);
-	node* find_by_key(node* subTreeRoot, int key);
-	node* find_by_index(const int index);
-	node* find_by_index(node* subTreeRoot, int index);
-
-	node* findParent_by_key(const int key);
-	node* findParent_by_key(node* subTreeRoot, int key);
-	node* findParent_by_index(const int index);
-	node* findParent_by_index(node* subTreeRoot, int index);
+	int indexParent_by_key(int key);
+	int indexParent_by_key(node* subTreeRoot, int key);
+	int keyParent_by_index(int index);
+	int keyParent_by_index(node* subTreeRoot, int index);
 
 	bool find_and_erase_by_key(int key);
 	bool find_and_erase_by_key(node* subTreeRoot, int key);

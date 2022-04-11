@@ -18,7 +18,7 @@ binary_tree::node* binary_tree::copy(node* subTreeRoot)
 binary_tree::node* binary_tree::getFree(node* subTreeRoot)
 {
 	if (subTreeRoot == nullptr)
-		throw "leaf: tree is empty";
+		throw "getFree: tree is empty";
 
 	if (subTreeRoot->left == nullptr || subTreeRoot->right == nullptr)
 		return subTreeRoot;
@@ -185,14 +185,212 @@ binary_tree::~binary_tree()
 	deleteSubTree(m_root);
 }
 
-//binary_tree::node* binary_tree::getRoot()
-//{
-//    return m_root;
-//}
-
-binary_tree::node* binary_tree::add(const int key)
+binary_tree::node* binary_tree::getRoot()
 {
-    return add(m_root, key);
+    return m_root;
+}
+
+bool binary_tree::add(const int key)
+{
+    return add(m_root, key) != nullptr;
+}
+
+int binary_tree::index_by_key(int key)
+{
+	return index_by_key(m_root, key);
+}
+
+int binary_tree::index_by_key(node* subTreeRoot, int key)
+{
+	node* Node = find_by_key(key);
+	int index = 0;
+
+	if (Node == nullptr)
+		return -1;
+
+	if (Node == subTreeRoot)
+		return index;
+
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(subTreeRoot);
+
+	while (currentLevelNodes.size() != 0)
+	{
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes)
+		{
+			if (node->left)
+			{
+				index++;
+
+				if (node->left == Node)
+					return index;
+
+				nextLevelNodes.push_back(node->left);
+			}
+
+			if (node->right)
+			{
+				index++;
+
+				if (node->right == Node)
+					return index;
+
+				nextLevelNodes.push_back(node->right);
+			}
+		}
+
+		currentLevelNodes.swap(nextLevelNodes);
+	}
+
+	return -1;
+}
+
+int binary_tree::key_by_index(int index)
+{
+	return key_by_index(m_root, index);
+}
+
+int binary_tree::key_by_index(node* subTreeRoot, int index)
+{
+	if (index == 0) {
+		return subTreeRoot->value();
+	}
+	else if (subTreeRoot == nullptr) {
+		return -1;
+	}
+
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(subTreeRoot);
+
+	while (currentLevelNodes.size() != 0 && index >= currentLevelNodes.size()) {
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes) {
+			if (node->left) {
+				nextLevelNodes.push_back(node->left);
+			}
+
+			if (node->right) {
+				nextLevelNodes.push_back(node->right);
+			}
+		}
+
+		index -= currentLevelNodes.size();
+		currentLevelNodes.swap(nextLevelNodes);
+	}
+
+	if (currentLevelNodes.size() == 0) {
+		return -1;
+	}
+	else {
+		return currentLevelNodes[index]->value();
+	}
+}
+
+int binary_tree::indexParent_by_key(int key)
+{
+	return indexParent_by_key(m_root, key);
+}
+
+int binary_tree::indexParent_by_key(node* subTreeRoot, int key)
+{
+	node* Node = findParent_by_key(key);
+	int index = 0;
+
+	if (Node == nullptr)
+		return -1;
+
+	if (Node == m_root)
+		return index;
+
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(m_root);
+
+	while (currentLevelNodes.size() != 0)
+	{
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes)
+		{
+			if (node->left)
+			{
+				index++;
+
+				if (node->left == Node)
+					return index;
+
+				nextLevelNodes.push_back(node->left);
+			}
+
+			if (node->right)
+			{
+				index++;
+
+				if (node->right == Node)
+					return index;
+
+				nextLevelNodes.push_back(node->right);
+			}
+		}
+
+		currentLevelNodes.swap(nextLevelNodes);
+	}
+
+	return -1;
+}
+
+int binary_tree::keyParent_by_index(int index)
+{
+	return keyParent_by_index(m_root, index);
+}
+
+int binary_tree::keyParent_by_index(node* subTreeRoot, int index)
+{
+	if (index == 0) {
+		return -1;
+	}
+	else if (subTreeRoot == nullptr) {
+		return -1;
+	}
+
+	std::vector<node*> prevLevelNodes;
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(subTreeRoot);
+
+
+	while (currentLevelNodes.size() != 0 && index >= currentLevelNodes.size()) {
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes) {
+			if (node->left) {
+				nextLevelNodes.push_back(node->left);
+			}
+
+			if (node->right) {
+				nextLevelNodes.push_back(node->right);
+			}
+		}
+
+		index -= currentLevelNodes.size();
+		prevLevelNodes = currentLevelNodes;
+		currentLevelNodes.swap(nextLevelNodes);
+	}
+
+	if (currentLevelNodes.size() == 0) {
+		return -1;
+	}
+	else {
+		for (node* i : prevLevelNodes)
+			if (i->left == currentLevelNodes[index] || i->right == currentLevelNodes[index])
+				return i->value();
+		return -1;
+	}
 }
 
 binary_tree::node* binary_tree::add(node* subTreeRoot, const int key)
@@ -789,6 +987,9 @@ void binary_tree::printLeafs(node* subTreeRoot)
 
 binary_tree binary_tree::operator=(const binary_tree& other)
 {
+	if (&other == this)
+		return *this;
+
 	deleteSubTree(m_root);
 
 	m_root = copy(other.m_root);

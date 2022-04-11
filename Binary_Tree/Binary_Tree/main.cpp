@@ -9,7 +9,11 @@ int main()
 	for (int i = 0; i < 10; i++)
 		bt.add(i%10);
 
-	binary_tree bt2 = bt;
+	bt.printVertical();
+
+	std::cout << bt.indexParent_by_key(7) << std::endl;;
+
+	/*binary_tree bt2 = bt;
 
 	bt.printVertical();
 	bt2.printVertical();
@@ -18,7 +22,7 @@ int main()
 
 	std::cout << bt.isEmpty() << " " << bt2.isEmpty() << std::endl;
 
-	bt2 = bt2.copySubTree(bt.find_by_index(1));
+	bt2 = bt2.copySubTree(bt.getRoot());
 	bt2.printVertical();
 
 	std::cout << bt2.height() << std::endl;
@@ -45,7 +49,7 @@ int main()
 		std::cout << i << " ";
 	std::cout << std::endl;
 
-	bt.printLeafs();
+	bt.printLeafs();*/
 
 	return 0;
 }
