@@ -3,6 +3,7 @@
 
 class binary_tree 
 {
+protected:
 	struct node;
 
 private:
