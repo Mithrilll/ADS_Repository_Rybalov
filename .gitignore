@@ -352,5 +352,4 @@ A.txt
 B.txt
 C.txt
 D.txt
-
-.zip
+*.zip

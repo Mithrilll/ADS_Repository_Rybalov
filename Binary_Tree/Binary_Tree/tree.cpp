@@ -28,14 +28,18 @@ binary_tree::node* binary_tree::getFree(node* subTreeRoot)
 		int h2 = height(subTreeRoot->right);
 		if (h1 < h2)
 			return getFree(subTreeRoot->left);
+		else if(h1 > h2)
+			return getFree(subTreeRoot->right);
 		else
-			return getFree(subTreeRoot->left);
+		{
+			int c1 = countNodes(subTreeRoot->left);
+			int c2 = countNodes(subTreeRoot->right);
+			if(c1 < c2)
+				return getFree(subTreeRoot->left);
+			else
+				return getFree(subTreeRoot->right);
+		}
 	}
-}
-
-void binary_tree::deleteSubTree()
-{
-	deleteSubTree(m_root);
 }
 
 void binary_tree::deleteSubTree(node* subTreeRoot)
@@ -55,8 +59,10 @@ bool binary_tree::isEmpty()
 	return m_root == nullptr;
 }
 
-binary_tree binary_tree::copySubTree(node* subTreeRoot)
+binary_tree binary_tree::copySubTree(int index)
 {
+	node* subTreeRoot = find_by_index(index);
+
 	binary_tree nt;
 	nt.m_root = copy(subTreeRoot);
 
@@ -65,11 +71,12 @@ binary_tree binary_tree::copySubTree(node* subTreeRoot)
 
 int binary_tree::height()
 {
-	return height(m_root);
+	return height(0);
 }
 
 int binary_tree::height(node* subTreeRoot)
 {
+
 	int hei = 0;
 	if (subTreeRoot == nullptr)
 		return hei;
@@ -101,9 +108,50 @@ int binary_tree::height(node* subTreeRoot)
 	return hei;
 }
 
+int binary_tree::height(int index)
+{
+	node* subTreeRoot = find_by_index(index);
+
+	int hei = 0;
+	if (subTreeRoot == nullptr)
+		return hei;
+
+	std::vector<node*> currentLevelNodes;
+	currentLevelNodes.push_back(subTreeRoot);
+
+	while (currentLevelNodes.size() != 0)
+	{
+		hei++;
+		std::vector<node*> nextLevelNodes;
+		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
+
+		for (node* node : currentLevelNodes)
+		{
+			if (node->left)
+			{
+				nextLevelNodes.push_back(node->left);
+			}
+
+			if (node->right) {
+				nextLevelNodes.push_back(node->right);
+			}
+		}
+
+		currentLevelNodes.swap(nextLevelNodes);
+	}
+
+	return hei;
+}
+
 int binary_tree::countNodes()
 {
 	return countNodes(m_root);
+}
+
+int binary_tree::countNodesSubTree(int index)
+{
+	node* subTreeRoot = find_by_index(index);
+	return countNodes(subTreeRoot);
 }
 
 int binary_tree::countNodes(node* subTreeRoot)
@@ -122,6 +170,12 @@ int binary_tree::countNodes(node* subTreeRoot)
 int binary_tree::max()
 {
 	return max(m_root);
+}
+
+int binary_tree::maxSubTree(int index)
+{
+	node* subTreeRoot = find_by_index(index);
+	return max(subTreeRoot);
 }
 
 int binary_tree::max(node* subTreeRoot)
@@ -150,6 +204,12 @@ int binary_tree::max(node* subTreeRoot)
 int binary_tree::min()
 {
 	return min(m_root);
+}
+
+int binary_tree::minSubTree(int index)
+{
+	node* subTreeRoot = find_by_index(index);
+	return min(subTreeRoot);
 }
 
 int binary_tree::min(node* subTreeRoot)
@@ -185,10 +245,21 @@ binary_tree::~binary_tree()
 	deleteSubTree(m_root);
 }
 
-binary_tree::node* binary_tree::getRoot()
+void binary_tree::deleteTree()
 {
-    return m_root;
+	deleteSubTree(m_root);
 }
+
+void binary_tree::deleteSubTree(int index)
+{
+	node* subTreeRoot = find_by_index(index);
+	deleteSubTree(subTreeRoot);
+}
+
+//binary_tree::node* binary_tree::getRoot()
+//{
+//    return m_root;
+//}
 
 bool binary_tree::add(const int key)
 {
@@ -198,6 +269,13 @@ bool binary_tree::add(const int key)
 int binary_tree::index_by_key(int key)
 {
 	return index_by_key(m_root, key);
+}
+
+int binary_tree::index_by_keySubTree(int index, int key)
+{
+	node* subTreeRoot = find_by_index(index);
+
+	return index_by_key(subTreeRoot, key);
 }
 
 int binary_tree::index_by_key(node* subTreeRoot, int key)
@@ -253,6 +331,13 @@ int binary_tree::key_by_index(int index)
 	return key_by_index(m_root, index);
 }
 
+int binary_tree::key_by_indexSubTree(int indexsubtree, int index)
+{
+	node* subTreeRoot = find_by_index(indexsubtree);
+
+	return key_by_index(subTreeRoot, index);
+}
+
 int binary_tree::key_by_index(node* subTreeRoot, int index)
 {
 	if (index == 0) {
@@ -294,6 +379,13 @@ int binary_tree::key_by_index(node* subTreeRoot, int index)
 int binary_tree::indexParent_by_key(int key)
 {
 	return indexParent_by_key(m_root, key);
+}
+
+int binary_tree::indexParent_by_keySubTree(int index, int key)
+{
+	node* subTreeRoot = find_by_index(index);
+
+	return indexParent_by_key(subTreeRoot, key);
 }
 
 int binary_tree::indexParent_by_key(node* subTreeRoot, int key)
@@ -347,6 +439,13 @@ int binary_tree::indexParent_by_key(node* subTreeRoot, int key)
 int binary_tree::keyParent_by_index(int index)
 {
 	return keyParent_by_index(m_root, index);
+}
+
+int binary_tree::keyParent_by_indexSubTree(int indexsubtree, int index)
+{
+	node* subTreeRoot = find_by_index(indexsubtree);
+
+	return keyParent_by_index(subTreeRoot, index);
 }
 
 int binary_tree::keyParent_by_index(node* subTreeRoot, int index)
@@ -501,18 +600,17 @@ binary_tree::node* binary_tree::findParent_by_key(int key)
 
 binary_tree::node* binary_tree::findParent_by_key(node* subTreeRoot, int key)
 {
-	if (m_root->value() == key)
+	if (m_root && (m_root->value() == key))
 		return nullptr;
 
 	if (subTreeRoot)
 	{
-		if (subTreeRoot->left && subTreeRoot->right)
+		if (subTreeRoot->left || subTreeRoot->right)
 		{
-			if (subTreeRoot->left->value() == key || subTreeRoot->right->value() == key)
+			if ((subTreeRoot->left && subTreeRoot->left->value() == key) || (subTreeRoot->right && subTreeRoot->right->value() == key))
 				return subTreeRoot;
 			else
 			{
-
 				node* left = findParent_by_key(subTreeRoot->left, key);
 				node* right = findParent_by_key(subTreeRoot->right, key);
 				if (left)
@@ -546,7 +644,8 @@ binary_tree::node* binary_tree::findParent_by_index(node* subTreeRoot, int index
 	currentLevelNodes.push_back(subTreeRoot);
 
 
-	while (currentLevelNodes.size() != 0 && index >= currentLevelNodes.size()) {
+	while (currentLevelNodes.size() != 0 && index >= currentLevelNodes.size()) 
+	{
 		std::vector<node*> nextLevelNodes;
 		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
 
@@ -581,10 +680,18 @@ bool binary_tree::find_and_erase_by_key(int key)
 	return find_and_erase_by_key(m_root, key);
 }
 
+bool binary_tree::find_and_erase_by_keySubTree(int index, int key)
+{
+	node* subTreeRoot = find_by_index(index);
+
+	return find_and_erase_by_key(subTreeRoot, key);
+}
+
 bool binary_tree::find_and_erase_by_key(node* subTreeRoot, int key)
 {
 	node* to_delete = find_by_key(subTreeRoot, key);
-	return erase(to_delete);
+	node* parent = findParent_by_key(subTreeRoot, key);
+	return erase(to_delete, parent);
 }
 
 bool binary_tree::find_and_erase_by_index(int index)
@@ -592,18 +699,27 @@ bool binary_tree::find_and_erase_by_index(int index)
 	return find_and_erase_by_index(m_root, index);
 }
 
+bool binary_tree::find_and_erase_by_indexSubTree(int indexsubtree, int index)
+{
+	node* subTreeRoot = find_by_index(indexsubtree);
+
+	return find_and_erase_by_index(subTreeRoot, index);
+}
+
 bool binary_tree::find_and_erase_by_index(node* subTreeRoot, int index)
 {
 	node* to_delete = find_by_index(subTreeRoot, index);
-	return erase(to_delete);
+	node* parent = findParent_by_index(subTreeRoot, index);
+	return erase(to_delete, parent);
 }
 
-bool binary_tree::erase(node* toDelete)
+bool binary_tree::erase(node* toDelete, node* parent)
 {
+	if (toDelete == nullptr)
+		return false;
+
 	if (toDelete->left == nullptr && toDelete->right == nullptr)
 	{
-		node* parent = findParent_by_key(toDelete->value());
-
 		if (parent && parent->left == toDelete)
 			parent->left = nullptr;
 
@@ -620,8 +736,6 @@ bool binary_tree::erase(node* toDelete)
 
 	if (toDelete->left == nullptr && toDelete->right != nullptr)
 	{
-		node* parent = findParent_by_key(toDelete->value());
-
 		if (parent && parent->left == toDelete)
 			parent->left = toDelete->right;
 
@@ -629,7 +743,7 @@ bool binary_tree::erase(node* toDelete)
 			parent->right = toDelete->right;
 
 		if (!parent)
-			m_root = toDelete->left;
+			m_root = toDelete->right;
 
 		delete toDelete;
 
@@ -638,8 +752,6 @@ bool binary_tree::erase(node* toDelete)
 
 	if (toDelete->left != nullptr && toDelete->right == nullptr)
 	{
-		node* parent = findParent_by_key(toDelete->value());
-
 		if (parent && parent->left == toDelete)
 			parent->left = toDelete->left;
 
@@ -656,17 +768,16 @@ bool binary_tree::erase(node* toDelete)
 
 	if (toDelete->left && toDelete->right)
 	{
-		node* parent = findParent_by_key(toDelete->value());
 		if (parent)
 		{
 			if (parent->left == toDelete)
 			{
 				parent->left = toDelete->left;
 				node* toAdd = getFree(parent);
-				if (toAdd->left == nullptr)
-					toAdd->left = toDelete->right;
-				else
+				if (toAdd->right == nullptr)
 					toAdd->right = toDelete->right;
+				else
+					toAdd->left = toDelete->right;
 			}
 
 			if (parent->right == toDelete)
@@ -683,10 +794,10 @@ bool binary_tree::erase(node* toDelete)
 		{
 			m_root = toDelete->left;
 			node* toAdd = getFree(m_root);
-			if (toAdd->left == nullptr)
-				toAdd->left = toDelete->right;
-			else
+			if (toAdd->right == nullptr)
 				toAdd->right = toDelete->right;
+			else
+				toAdd->left = toDelete->right;
 		}
 
 		delete toDelete;
@@ -698,6 +809,12 @@ bool binary_tree::erase(node* toDelete)
 void binary_tree::printHorizontal()
 {
 	printHorizontal(m_root);
+}
+
+void binary_tree::printHorizontalSubTree(int index, const int level)
+{
+	node* subTreeRoot = find_by_index(index);
+	printHorizontal(subTreeRoot);
 }
 
 void binary_tree::printHorizontal(node* subTreeRoot, const int level)
@@ -724,6 +841,12 @@ void binary_tree::printHorizontal(node* subTreeRoot, const int level)
 void binary_tree::printLevel(const int level)
 {
 	printLevel(m_root, level, 0, true);
+}
+
+void binary_tree::printLevelSubTree(int index, const int level, const int currentLevel, bool left)
+{
+	node* subTreeRoot = find_by_index(index);
+	printLevel(subTreeRoot, level, 0, true);
 }
 
 void binary_tree::printLevel(node* subTreeRoot, const int level, const int currentLevel, bool left)
@@ -772,6 +895,12 @@ bool binary_tree::isBalanced()
 	return isBalanced(m_root);
 }
 
+bool binary_tree::isBalancedSubTree(int index)
+{
+	node* subTreeRoot = find_by_index(index);
+	return isBalanced(subTreeRoot);
+}
+
 bool binary_tree::isBalanced(node* subTreeRoot)
 {
 	if (subTreeRoot == nullptr)
@@ -788,10 +917,16 @@ int binary_tree::sum()
 	return sum(m_root);
 }
 
+int binary_tree::sumSubTree(int index)
+{
+	node* subTreeRoot = find_by_index(index);
+	return sum(subTreeRoot);
+}
+
 int binary_tree::sum(node* subTreeRoot)
 {
 	if (subTreeRoot == nullptr) {
-		return -1;
+		return 0;
 	}
 
 	int summa = 0;
@@ -825,6 +960,12 @@ int binary_tree::sum(node* subTreeRoot)
 int binary_tree::level(int key)
 {
 	return level(m_root, key);
+}
+
+int binary_tree::levelSubTree(int index, int key)
+{
+	node* subTreeRoot = find_by_index(index);
+	return level(subTreeRoot, key);
 }
 
 int binary_tree::level(node* subTreeRoot, int key)
@@ -870,6 +1011,12 @@ std::vector<int> binary_tree::round()
 	return round(m_root);
 }
 
+std::vector<int> binary_tree::roundSubTree(int index)
+{
+	node* subTreeRoot = find_by_index(index);
+	return round(subTreeRoot);
+}
+
 std::vector<int> binary_tree::round(node* subTreeRoot)
 {
 	if (subTreeRoot == nullptr)
@@ -906,6 +1053,12 @@ std::vector<int> binary_tree::round(node* subTreeRoot)
 void binary_tree::printVertical()
 {
 	printVertical(m_root);
+}
+
+void binary_tree::printVerticalSubTree(int index)
+{
+	node* subTreeRoot = find_by_index(index);
+	printVertical(subTreeRoot);
 }
 
 void binary_tree::printVertical(node* subTreeRoot)
@@ -970,6 +1123,12 @@ void binary_tree::printVertical(node* subTreeRoot)
 void binary_tree::printLeafs()
 {
 	printLeafs(m_root);
+}
+
+void binary_tree::printLeafsSubTree(int index)
+{
+	node* subTreeRoot = find_by_index(index);
+	printLeafs(subTreeRoot);
 }
 
 void binary_tree::printLeafs(node* subTreeRoot)
