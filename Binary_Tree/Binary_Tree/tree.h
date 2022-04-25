@@ -12,7 +12,6 @@ protected:
 
 	node* getFree(node* subTreeRoot);
 
-protected:
 	node* add(node* subTreeRoot, const int key);
 
 	node* find_by_key(node* subTreeRoot, int key);

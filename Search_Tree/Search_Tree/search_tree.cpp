@@ -10,26 +10,78 @@ search_tree::search_tree(const search_tree& other) : binary_tree(other)
 
 search_tree::~search_tree()
 {
-
+	deleteTree();
 }
 
-search_tree search_tree::copy(node* subTreeRoot)
+search_tree search_tree::copy(int index)
 {
-	return search_tree();
+	node* subTreeRoot = find_by_index(index);
+	search_tree newTree;
+	
+	newTree.m_root = copy(subTreeRoot);
+	return newTree;
 }
 
 int search_tree::max()
 {
-	return 0;
+	
+	if (m_root == nullptr)
+		return INT_MIN;
+
+	int key = m_root->value();
+	node* temp = m_root;
+	while (temp->right)
+	{
+		temp = temp->right;
+		key = temp->value();
+	}
+
+	return key;
 }
 
 int search_tree::min()
 {
-	return 0;
+	if (m_root == nullptr)
+		return INT_MIN;
+
+	int key = m_root->value();
+	node* temp = m_root;
+	while (temp->left)
+	{
+		temp = temp->left;
+		key = temp->value();
+	}
+
+	return key;
 }
 
 void search_tree::add(int key)
 {
+	if (m_root == nullptr)
+	{
+		m_root = new node(key);
+	}
+	else
+	{
+		node* temp = m_root;
+		while (temp->left && key < temp->value() || temp->right && key >= temp->value())
+		{
+			if (key < temp->value())
+				temp = temp->left;
+			else
+				temp = temp->right;
+		}
+		if (key < temp->value())
+		{
+			node* left = new node(key);
+			temp->left = left;
+		}
+		else
+		{
+			node* right = new node(key);
+			temp->right = right;
+		}
+	}
 }
 
 void search_tree::erase_by_key(int key)
@@ -40,17 +92,41 @@ void search_tree::erase_by_index(int index)
 {
 }
 
-binary_tree::node* search_tree::find(int key)
-{
-	return nullptr;
-}
-
-int search_tree::heihght(int key)
+int search_tree::index_by_key(int key)
 {
 	return 0;
 }
 
+int search_tree::heihght(int key)
+{
+	if (m_root == nullptr)
+		return -1;
+
+	int h = 0;
+	node* temp = m_root;
+	while (temp->left && key < temp->value() || temp->right && key > temp->value())
+	{
+		if (key < temp->value())
+			temp = temp->left;
+		else
+			temp = temp->right;
+		h++;
+	}
+
+	if (key == temp->value())
+		return h;
+	else
+		return -1;
+}
+
 search_tree search_tree::operator=(const search_tree& other)
 {
-	return search_tree();
+	if (&other == this)
+		return *this;
+
+	deleteSubTree(m_root);
+
+	m_root = copy(other.m_root);
+
+	return *this;
 }

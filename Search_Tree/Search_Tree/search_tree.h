@@ -9,7 +9,7 @@ public:
 	search_tree(const search_tree& other);
 	~search_tree();
 
-	search_tree copy(node* subTreeRoot);
+	search_tree copy(int index);
 
 	int max();
 	int min();
@@ -18,7 +18,7 @@ public:
 	void erase_by_key(int key);
 	void erase_by_index(int index);
 
-	node* find(int key);
+	int index_by_key(int key);
 
 	int heihght(int key);
 
