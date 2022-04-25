@@ -6,7 +6,7 @@ class binary_tree
 protected:
 	struct node;
 
-private:
+protected:
 	// копирование поддерева
 	node* copy(node* subTreeRoot);
 
