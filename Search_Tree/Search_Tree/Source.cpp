@@ -18,7 +18,7 @@ int main()
 
 	st.printVertical();
 
-	//std::cout << st.min() << " " << st.max() << std::endl;
+	std::cout << st.min() << " " << st.max() << std::endl;
 
 	std::cout << st.height_by_key(9) << std::endl;
 	std::cout << st.index_by_key(5) << std::endl;

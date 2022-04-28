@@ -22,6 +22,9 @@ public:
 
 	search_tree copy(int index);
 
+	using binary_tree::min;
+	using binary_tree::max;
+
 	bool add(const int key) override;
 
 	int height_by_key(int key);
