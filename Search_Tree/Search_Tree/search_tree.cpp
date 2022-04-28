@@ -76,6 +76,91 @@ binary_tree::node* search_tree::minParent(node* subTreeRoot)
 	return temp;
 }
 
+bool search_tree::erase(node* toDelete, node* parent)
+{
+	if (toDelete == nullptr)
+		return false;
+
+	if (toDelete->left == nullptr && toDelete->right == nullptr)
+	{
+		if (parent && parent->left == toDelete)
+			parent->left = nullptr;
+
+		if (parent && parent->right == toDelete)
+			parent->right = nullptr;
+
+		if (!parent)
+			m_root = nullptr;
+
+		delete toDelete;
+
+		return true;
+	}
+
+	if (toDelete->left == nullptr && toDelete->right != nullptr)
+	{
+		if (parent && parent->left == toDelete)
+			parent->left = toDelete->right;
+
+		if (parent && parent->right == toDelete)
+			parent->right = toDelete->right;
+
+		if (!parent)
+			m_root = toDelete->right;
+
+		delete toDelete;
+
+		return true;
+	}
+
+	if (toDelete->left != nullptr && toDelete->right == nullptr)
+	{
+		if (parent && parent->left == toDelete)
+			parent->left = toDelete->left;
+
+		if (parent && parent->right == toDelete)
+			parent->right = toDelete->left;
+
+		if (!parent)
+			m_root = toDelete->left;
+
+		delete toDelete;
+
+		return true;
+	}
+
+	if (toDelete->left && toDelete->right)
+	{
+		node* to_insert = min(toDelete->right);
+		node* parent_insert = minParent(toDelete->right);
+
+		if (parent_insert)
+		{
+			parent_insert->left = to_insert->right;
+			to_insert->left = toDelete->left;
+			to_insert->right = toDelete->right;
+		}
+		else
+		{
+			to_insert->left = toDelete->left;
+			to_insert->right = nullptr;
+		}
+
+		if (parent && parent->left == toDelete)
+			parent->left = to_insert;
+
+		if (parent && parent->right == toDelete)
+			parent->right = to_insert;
+
+		if (!parent)
+			m_root = to_insert;
+
+		delete toDelete;
+
+		return true;
+	}
+}
+
 search_tree::search_tree() : binary_tree()
 {
 }
@@ -96,39 +181,6 @@ search_tree search_tree::copy(int index)
 	
 	newTree.m_root = binary_tree::copy(subTreeRoot);
 	return newTree;
-}
-
-int search_tree::max()
-{
-	
-	if (m_root == nullptr)
-		return INT_MIN;
-
-	int key = m_root->value();
-	node* temp = m_root;
-	while (temp->right)
-	{
-		temp = temp->right;
-		key = temp->value();
-	}
-
-	return key;
-}
-
-int search_tree::min()
-{
-	if (m_root == nullptr)
-		return INT_MIN;
-
-	int key = m_root->value();
-	node* temp = m_root;
-	while (temp->left)
-	{
-		temp = temp->left;
-		key = temp->value();
-	}
-
-	return key;
 }
 
 bool search_tree::add(int key)
@@ -162,224 +214,6 @@ bool search_tree::add(int key)
 	return true;
 }
 
-bool search_tree::erase_by_key(int key)
-{
-	node* to_delete = find_by_key(key);
-	node* parent = findParent_by_key(m_root, key);
-
-	if (to_delete == nullptr)
-		return false;
-
-	if (to_delete->left == nullptr && to_delete->right == nullptr)
-	{
-		if (parent && parent->left == to_delete)
-			parent->left = nullptr;
-
-		if (parent && parent->right == to_delete)
-			parent->right = nullptr;
-
-		if (!parent)
-			m_root = nullptr;
-
-		delete to_delete;
-
-		return true;
-	}
-
-	if (to_delete->left == nullptr && to_delete->right != nullptr)
-	{
-		if (parent && parent->left == to_delete)
-			parent->left = to_delete->right;
-
-		if (parent && parent->right == to_delete)
-			parent->right = to_delete->right;
-
-		if (!parent)
-			m_root = to_delete->right;
-
-		delete to_delete;
-
-		return true;
-	}
-
-	if (to_delete->left != nullptr && to_delete->right == nullptr)
-	{
-		if (parent && parent->left == to_delete)
-			parent->left = to_delete->left;
-
-		if (parent && parent->right == to_delete)
-			parent->right = to_delete->left;
-
-		if (!parent)
-			m_root = to_delete->left;
-
-		delete to_delete;
-
-		return true;
-	}
-
-	if (to_delete->left && to_delete->right)
-	{
-		node* to_insert = min(to_delete->right);
-		node* parent_insert = minParent(to_delete->right);
-
-		if (parent_insert)
-		{
-			parent_insert->left = to_insert->right;
-			to_insert->left = to_delete->left;
-			to_insert->right = to_delete->right;
-		}
-		else
-		{
-			to_insert->left = to_delete->left;
-			to_insert->right = nullptr;
-		}
-
-		if (parent && parent->left == to_delete)
-			parent->left = to_insert;
-
-		if (parent && parent->right == to_delete)
-			parent->right = to_insert;
-
-		if (!parent)
-			m_root = to_insert;
-
-		delete to_delete;
-
-		return true;
-	}
-}
-
-bool search_tree::erase_by_index(int index)
-{
-	node* to_delete = find_by_index(index);
-	node* parent = findParent_by_index(m_root, index);
-
-	if (to_delete == nullptr)
-		return false;
-
-	if (to_delete->left == nullptr && to_delete->right == nullptr)
-	{
-		if (parent && parent->left == to_delete)
-			parent->left = nullptr;
-
-		if (parent && parent->right == to_delete)
-			parent->right = nullptr;
-
-		if (!parent)
-			m_root = nullptr;
-
-		delete to_delete;
-
-		return true;
-	}
-
-	if (to_delete->left == nullptr && to_delete->right != nullptr)
-	{
-		if (parent && parent->left == to_delete)
-			parent->left = to_delete->right;
-
-		if (parent && parent->right == to_delete)
-			parent->right = to_delete->right;
-
-		if (!parent)
-			m_root = to_delete->right;
-
-		delete to_delete;
-
-		return true;
-	}
-
-	if (to_delete->left != nullptr && to_delete->right == nullptr)
-	{
-		if (parent && parent->left == to_delete)
-			parent->left = to_delete->left;
-
-		if (parent && parent->right == to_delete)
-			parent->right = to_delete->left;
-
-		if (!parent)
-			m_root = to_delete->left;
-
-		delete to_delete;
-
-		return true;
-	}
-
-	if (to_delete->left && to_delete->right)
-	{
-		node* to_insert = min(to_delete->right);
-		node* parent_insert = minParent(to_delete->right);
-
-		if (parent_insert)
-		{
-			parent_insert->left = to_insert->right;
-			to_insert->left = to_delete->left;
-			to_insert->right = to_delete->right;
-		}
-		else
-		{
-			to_insert->left = to_delete->left;
-			to_insert->right = nullptr;
-		}
-
-		if (parent && parent->left == to_delete)
-			parent->left = to_insert;
-
-		if (parent && parent->right == to_delete)
-			parent->right = to_insert;
-
-		if (!parent)
-			m_root = to_insert;
-
-		delete to_delete;
-
-		return true;
-	}
-}
-
-int search_tree::index_by_key(int key)
-{
-	node* to_find = find_by_key(key);
-	
-	if (m_root == nullptr || to_find == nullptr) 
-		return -1;
-
-	if (m_root == to_find)
-		return 0;
-
-	int index = 0;
-	std::vector<node*> currentLevelNodes;
-	currentLevelNodes.push_back(m_root);
-
-	while (currentLevelNodes.size() != 0) {
-		std::vector<node*> nextLevelNodes;
-		nextLevelNodes.reserve(currentLevelNodes.size() * 2);
-
-		for (node* node : currentLevelNodes) 
-		{
-			if (node->left) 
-			{
-				nextLevelNodes.push_back(node->left);
-				++index;
-				if (node->left == to_find)
-					return index;
-			}
-
-			if (node->right) 
-			{
-				nextLevelNodes.push_back(node->right);
-				++index;
-				if(node->right == to_find)
-					return index;
-			}
-		}
-		currentLevelNodes.swap(nextLevelNodes);
-	}
-
-	return -1;
-}
-
 int search_tree::height_by_key(int key)
 {
 	if (m_root == nullptr)
@@ -402,14 +236,8 @@ int search_tree::height_by_key(int key)
 		return -1;
 }
 
-search_tree search_tree::operator=(const search_tree& other)
+search_tree& search_tree::operator=(const search_tree& other)
 {
-	if (&other == this)
-		return *this;
-
-	deleteSubTree(m_root);
-
-	m_root = binary_tree::copy(other.m_root);
-
+	binary_tree::operator=(other);
 	return *this;
 }

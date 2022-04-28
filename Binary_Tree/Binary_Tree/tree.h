@@ -28,11 +28,11 @@ protected:
 
 	int height(node* sunTreeRoot);
 
-	bool erase(node* toDelete, node* parent);
+	virtual bool erase(node* toDelete, node* parent);
 
 	int countNodes(node* sunTreeRoot);
-	int max(node* sunTreeRoot);
-	int min(node* sunTreeRoot);
+	virtual node* max(node* sunTreeRoot);
+	virtual node* min(node* sunTreeRoot);
 
 	int index_by_key(node* subTreeRoot, int key);
 	int key_by_index(node* subTreeRoot, int index);
@@ -87,8 +87,8 @@ public:
 	int min();
 	int minSubTree(int index);
 
-	bool add(const int key);
-	int index_by_key(int key);
+	virtual bool add(const int key);
+	virtual int index_by_key(int key);
 	int index_by_keySubTree(int index, int key);
 	int key_by_index(int index);
 	int key_by_indexSubTree(int indexsubtree, int index);

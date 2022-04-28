@@ -13,6 +13,8 @@ protected:
 	node* maxParent(node* subTreeRoot);
 	node* minParent(node* subTreeRoot);
 
+	bool erase(node* toDelete, node* parent);
+
 public:
 	search_tree();
 	search_tree(const search_tree& other);
@@ -20,16 +22,9 @@ public:
 
 	search_tree copy(int index);
 
-	int max();
-	int min();
-
-	bool add(int key);
-	bool erase_by_key(int key);
-	bool erase_by_index(int index);
-
-	int index_by_key(int key);
+	bool add(const int key) override;
 
 	int height_by_key(int key);
 
-	search_tree operator=(const search_tree& other);
+	search_tree& operator=(const search_tree& other);
 };

@@ -18,7 +18,7 @@ int main()
 
 	st.printVertical();
 
-	std::cout << st.min() << " " << st.max() << std::endl;
+	//std::cout << st.min() << " " << st.max() << std::endl;
 
 	std::cout << st.height_by_key(9) << std::endl;
 	std::cout << st.index_by_key(5) << std::endl;
@@ -35,12 +35,18 @@ int main()
 	st.add(10);
 
 	st.printVertical();
-	st.erase_by_key(8);
+	st.find_and_erase_by_key(8);
 	st.printVertical();
-	st.erase_by_key(5);
+	st.find_and_erase_by_key(5);
 	st.printVertical();
-	st.erase_by_index(1);
+	st.find_and_erase_by_index(1);
 	st.printVertical();
+
+
+	binary_tree* tree = &st;
+
+	tree->add(8);
+	tree->printVertical();
 
 	return 0;
 }
