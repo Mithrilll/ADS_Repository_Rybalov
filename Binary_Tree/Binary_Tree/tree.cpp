@@ -169,32 +169,32 @@ int binary_tree::countNodes(node* subTreeRoot)
 
 int binary_tree::max()
 {
-	return max(m_root);
+	return max(m_root)->value();
 }
 
 int binary_tree::maxSubTree(int index)
 {
 	node* subTreeRoot = find_by_index(index);
-	return max(subTreeRoot);
+	return max(subTreeRoot)->value();
 }
 
-int binary_tree::max(node* subTreeRoot)
+binary_tree::node* binary_tree::max(node* subTreeRoot)
 {
 	if (subTreeRoot == nullptr)
 		throw "max: subtree is empty";
 
-	int m = subTreeRoot->value();
+	node* m = subTreeRoot;
 	if (subTreeRoot->left)
 	{
-		int m1 = max(subTreeRoot->left);
-		if (m < m1)
+		node* m1 = max(subTreeRoot->left);
+		if (m->value() < m1->value())
 			m = m1;
 	}
 
 	if (subTreeRoot->right)
 	{
-		int m1 = max(subTreeRoot->right);
-		if (m < m1)
+		node* m1 = max(subTreeRoot->right);
+		if (m->value() < m1->value())
 			m = m1;
 	}
 		
@@ -203,32 +203,32 @@ int binary_tree::max(node* subTreeRoot)
 
 int binary_tree::min()
 {
-	return min(m_root);
+	return min(m_root)->value();
 }
 
 int binary_tree::minSubTree(int index)
 {
 	node* subTreeRoot = find_by_index(index);
-	return min(subTreeRoot);
+	return min(subTreeRoot)->value();
 }
 
-int binary_tree::min(node* subTreeRoot)
+binary_tree::node* binary_tree::min(node* subTreeRoot)
 {
 	if (subTreeRoot == nullptr)
 		throw "min: subtree is empty";
 
-	int m = subTreeRoot->value();
+	node* m = subTreeRoot;
 	if (subTreeRoot->left)
 	{
-		int m1 = max(subTreeRoot->left);
-		if (m > m1)
+		node* m1 = min(subTreeRoot->left);
+		if (m->value() > m1->value())
 			m = m1;
 	}
 
 	if (subTreeRoot->right)
 	{
-		int m1 = max(subTreeRoot->right);
-		if (m > m1)
+		node* m1 = min(subTreeRoot->right);
+		if (m->value() > m1->value())
 			m = m1;
 	}
 

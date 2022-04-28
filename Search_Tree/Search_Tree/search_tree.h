@@ -4,23 +4,27 @@
 
 class search_tree : public binary_tree
 {
+protected:
+	node* find_by_key(int key);
+
+	node* max(node* subTreeRoot);
+	node* min(node* subTreeRoot);
+
+	node* maxParent(node* subTreeRoot);
+	node* minParent(node* subTreeRoot);
+
+	bool erase(node* toDelete, node* parent);
+
 public:
 	search_tree();
 	search_tree(const search_tree& other);
 	~search_tree();
 
-	search_tree copy(node* subTreeRoot);
+	search_tree copy(int index);
 
-	int max();
-	int min();
+	bool add(const int key) override;
 
-	void add(int key);
-	void erase_by_key(int key);
-	void erase_by_index(int index);
+	int height_by_key(int key);
 
-	node* find(int key);
-
-	int heihght(int key);
-
-	search_tree operator=(const search_tree& other);
+	search_tree& operator=(const search_tree& other);
 };
