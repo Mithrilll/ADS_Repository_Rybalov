@@ -23,29 +23,25 @@ int main()
 	std::cout << st.height_by_key(9) << std::endl;
 	std::cout << st.index_by_key(5) << std::endl;
 
-	st.deleteTree();
-	st.add(5);
-	st.add(2);
-	st.add(8);
-	st.add(1);
-	st.add(3);
-	st.add(6);
-	st.add(10);
-	st.add(9);
-	st.add(10);
-
-	st.printVertical();
-	st.find_and_erase_by_key(8);
-	st.printVertical();
-	st.find_and_erase_by_key(5);
-	st.printVertical();
-	st.find_and_erase_by_index(1);
-	st.printVertical();
-
-
 	binary_tree* tree = &st;
 
+	tree->deleteTree();
+	tree->add(5);
+	tree->add(2);
 	tree->add(8);
+	tree->add(1);
+	tree->add(3);
+	tree->add(6);
+	tree->add(10);
+	tree->add(9);
+	tree->add(10);
+
+	tree->printVertical();
+	tree->find_and_erase_by_key(8);
+	tree->printVertical();
+	tree->find_and_erase_by_key(5);
+	tree->printVertical();
+	tree->find_and_erase_by_index(1);
 	tree->printVertical();
 
 	return 0;
