@@ -13,7 +13,7 @@ protected:
 	node* maxParent(node* subTreeRoot);
 	node* minParent(node* subTreeRoot);
 
-	bool erase(node* toDelete, node* parent);
+	bool erase(node* toDelete, node* parent) override;
 
 public:
 	search_tree();
