@@ -53,27 +53,34 @@ binary_tree::node* search_tree::maxParent(node* subTreeRoot)
 	if (subTreeRoot == nullptr || subTreeRoot->right == nullptr)
 		return nullptr;
 
+	node* m = max(subTreeRoot);
 	node* temp = subTreeRoot;
 	while (temp->right && temp->right->right)
 	{
 		temp = temp->right;
 	}
 
-	return temp;
+	if (temp->right == m)
+		return temp;
+	else
+		return nullptr;
 }
 
 binary_tree::node* search_tree::minParent(node* subTreeRoot)
 {
 	if (subTreeRoot == nullptr || subTreeRoot->left == nullptr)
 		return nullptr;
-
+	node* m = min(subTreeRoot);
 	node* temp = subTreeRoot;
 	while (temp->left && temp->left->left)
 	{
 		temp = temp->left;
 	}
 
-	return temp;
+	if (temp->left == m)
+		return temp;
+	else
+		return nullptr;
 }
 
 bool search_tree::erase(node* toDelete, node* parent)
@@ -143,7 +150,6 @@ bool search_tree::erase(node* toDelete, node* parent)
 		else
 		{
 			to_insert->left = toDelete->left;
-			to_insert->right = nullptr;
 		}
 
 		if (parent && parent->left == toDelete)

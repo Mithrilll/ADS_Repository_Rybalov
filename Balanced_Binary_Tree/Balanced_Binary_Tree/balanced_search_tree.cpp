@@ -1,4 +1,5 @@
 #include "balanced_search_tree.h"
+#include <iostream>
 
 bool balanced_search_tree::erase(node* toDelete, node* parent)
 {
@@ -22,33 +23,77 @@ void balanced_search_tree::balance(node* subTreeRoot, node* parent)
 
 		if (h1 - h2 == 2)
 		{
-			node* temp = subTreeRoot->left;
-			subTreeRoot->left = subTreeRoot->left->right;
-			temp->right = subTreeRoot;
-			if (parent == nullptr)
-				m_root = temp;
+			int h1_1 = height(subTreeRoot->left->left);
+			int h1_2 = height(subTreeRoot->left->right);
+			if (h1_1 - h1_2 > -1)
+			{
+				node* temp = subTreeRoot->left;
+				subTreeRoot->left = subTreeRoot->left->right;
+				temp->right = subTreeRoot;
+				if (parent == nullptr)
+					m_root = temp;
+				else
+				{
+					if (parent->left == subTreeRoot)
+						parent->left = temp;
+					else
+						parent->right = temp;
+				}
+			}
 			else
 			{
-				if(parent->left == subTreeRoot)
-					parent->left = temp;
+				node* temp = subTreeRoot->left->right;
+				subTreeRoot->left->right = temp->left;
+				temp->left = subTreeRoot->left;
+				subTreeRoot->left = temp->right;
+				temp->right = subTreeRoot;
+				if (parent == nullptr)
+					m_root = temp;
 				else
-					parent->right = temp;
+				{
+					if (parent->left == subTreeRoot)
+						parent->left = temp;
+					else
+						parent->right = temp;
+				}
 			}
 		}
 
 		if (h1 - h2 == -2)
 		{
-			node* temp = subTreeRoot->right;
-			subTreeRoot->right = subTreeRoot->right->left;
-			temp->left = subTreeRoot;
-			if (parent == nullptr)
-				m_root = temp;
+			int h2_1 = height(subTreeRoot->right->left);
+			int h2_2 = height(subTreeRoot->right->right);
+			if (h2_1 - h2_2 < 1)
+			{
+				node* temp = subTreeRoot->right;
+				subTreeRoot->right = subTreeRoot->right->left;
+				temp->left = subTreeRoot;
+				if (parent == nullptr)
+					m_root = temp;
+				else
+				{
+					if (parent->left == subTreeRoot)
+						parent->left = temp;
+					else
+						parent->right = temp;
+				}
+			}
 			else
 			{
-				if (parent->left == subTreeRoot)
-					parent->left = temp;
+				node* temp = subTreeRoot->right->left;
+				subTreeRoot->right->left = temp->right;
+				temp->right = subTreeRoot->right;
+				subTreeRoot->right = temp->left;
+				temp->left = subTreeRoot;
+				if (parent == nullptr)
+					m_root = temp;
 				else
-					parent->right = temp;
+				{
+					if (parent->left == subTreeRoot)
+						parent->left = temp;
+					else
+						parent->right = temp;
+				}
 			}
 		}
 	}
