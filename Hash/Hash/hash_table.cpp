@@ -1,78 +1,4 @@
-#pragma once
-#include <iostream>
-#include <string>
-
-class IHashFunction
-{
-public:
-	virtual int operator()(int, int, int) = 0;
-};
-
-class FirstHashFunction : public IHashFunction
-{
-public:
-
-	int operator()(int N, int K, int i) override
-	{
-		if (i == 0)
-			return K % N;
-		else if (i > 0)
-			return (operator()(N, K, i - 1) + c * i + d * i * i) % N;
-	}
-
-private:
-	const int c = 5;
-	const int d = 3;
-} function1;
-
-class SecondHashFunction : public IHashFunction
-{
-public:
-
-	int operator()(int N, int K, int i) override
-	{
-		if (i == 0)
-			return K % N;
-		else if (i > 0)
-			return static_cast<int>(operator()(N, K, i - 1) * a * N) % N;
-	}
-
-private:
-	const double a = 0.6180339887;
-} function2;
-
-struct table_element
-{
-	int key = 0;
-	std::string data = "";
-	bool hasValue = false;
-	table_element* next = nullptr;
-};
-
-class hash_table
-{
-public:
-	hash_table();
-	hash_table(int n);
-	hash_table(const hash_table& other);
-	~hash_table();
-
-	hash_table operator=(const hash_table& other);
-
-	bool add(int _key, std::string _str);
-	bool erase(int _key);
-
-	bool inTable(int _key);
-
-	void change_function(IHashFunction* newFunction);
-
-	friend std::ostream& operator<<(std::ostream& out, const hash_table& other);
-
-private:
-	table_element* m_table;
-	int m_size;
-	IHashFunction* m_function;
-};
+#include "hash_table.h"
 
 hash_table::hash_table()
 {
@@ -101,6 +27,8 @@ hash_table::~hash_table()
 {
 	if (m_table != nullptr)
 		delete[] m_table;
+	if (m_function != nullptr)
+		delete m_function;
 }
 
 hash_table hash_table::operator=(const hash_table& other)
@@ -119,7 +47,7 @@ hash_table hash_table::operator=(const hash_table& other)
 
 bool hash_table::add(int _key, std::string _str)
 {
-	int index = (*m_function)(m_size, _key, 1);
+	int index = (*m_function)(_key, m_size, 1);
 	if (!m_table[index].hasValue)
 	{
 		m_table[index].key = _key;
@@ -146,7 +74,7 @@ bool hash_table::add(int _key, std::string _str)
 
 bool hash_table::erase(int _key)
 {
-	int index = (*m_function)(m_size, _key, 1);
+	int index = (*m_function)(_key, m_size, 1);
 
 	if (!m_table[index].hasValue)
 	{
@@ -159,7 +87,7 @@ bool hash_table::erase(int _key)
 
 	if (temp == nullptr)
 		return false;
-	else if (temp->hasValue && temp->key == _key)
+	else if(temp->hasValue && temp->key == _key)
 	{
 		while (temp->next != nullptr)
 		{
@@ -177,7 +105,7 @@ bool hash_table::erase(int _key)
 
 bool hash_table::inTable(int _key)
 {
-	int index = (*m_function)(m_size, _key, 1);
+	int index = (*m_function)(_key, m_size, 1);
 
 	table_element* temp = &m_table[index];
 	while (temp && temp->key != _key && temp->hasValue)
@@ -185,7 +113,7 @@ bool hash_table::inTable(int _key)
 
 	if (temp == nullptr)
 		return false;
-	else if (temp->hasValue && temp->key == _key)
+	else if(temp->hasValue && temp->key == _key)
 		return true;
 }
 
@@ -199,7 +127,7 @@ void hash_table::change_function(IHashFunction* newFunction)
 	{
 		if (m_table[i].hasValue)
 		{
-			int index = (*m_function)(m_size, m_table[i].key, 1);
+			int index = (*m_function)(m_table[i].key, m_size, 1);
 			if (!newTable[index].hasValue)
 			{
 				newTable[index].key = m_table[i].key;
@@ -228,10 +156,7 @@ std::ostream& operator<<(std::ostream& out, const hash_table& other)
 {
 	for (int i = 0; i < other.m_size; i++)
 	{
-		if (other.m_table[i].hasValue)
-			out << i << "\t" << &other.m_table[i] << "\t" << other.m_table[i].next << "\t" << other.m_table[i].key << "\t" << other.m_table[i].data << "\n";
-		else
-			out << i << "\tfree\n";
+		out << i << "\t" << &other.m_table[i] << "\t" << other.m_table[i].next << "\t" << other.m_table[i].key << "\t" << other.m_table[i].data << "\n";
 	}
 
 	return out;
